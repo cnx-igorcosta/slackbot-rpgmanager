@@ -10,7 +10,11 @@ var personagemSchema = new Schema({
   sab : Number,
   car : Number,
   pv : Number,
-  pvTotal: Number
+  pvTotal: Number,
+  xp: Number,
+  nivel: Number,
+  classe: String,
+  raca: String
 });
 
 personagemSchema.methods.stats = function(){

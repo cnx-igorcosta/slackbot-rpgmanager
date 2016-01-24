@@ -1,7 +1,5 @@
 var SlackBot = require('slackbots');
 var comandos = require('./controllers/comandos');
-//var controller = require('./controllers/personagemController');
-//var comandos = ['new', 'xp'];
 
 // create a bot
 var bot = new SlackBot({
@@ -70,7 +68,7 @@ var getChannelById = function (channelId) {
 };
 
 /*var rolarDado = function(message){
-  var dado = message.replace(/ /g,'').replace(/(D|d)ice/g,'');
+  var dado = message.replace(/\s/g,'').replace(/(D|d)ice/g,'');
   var resultado = "Resultado ";
   var total = 0;
   if(/^\d+[d]\d+$/.test(dado)){
