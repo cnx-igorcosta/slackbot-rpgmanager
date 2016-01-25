@@ -69,6 +69,14 @@ var experiencia = function(bot, msg, channel){
   }
 };
 
+var item = function(bot, msg, channel){
+  //TODO: testar regex 'item leoncio + (vassoura,1)', 'item leoncio - (flecha caça,1)'
+  if(/^(I|i)tem\s+\w+(\s\w+)*\s*(\+|-|=)\s*\(\s*\w+(\s\w+)*\s*[,]\s*\d+\s*\)\s*$/.test(msg)){
+    //substitui item por ''
+    var xp = msg.replace(/^(I|i)tem/g,"");
+  }
+};
+
 var rolarDado = function(bot, msg, channel){
   if(/^(R|r)oll\s*\d+(D|d)\d+\s*((\+|-)\d+\s*)?$/.test(msg)){
     //Remove texto Roll
@@ -76,7 +84,7 @@ var rolarDado = function(bot, msg, channel){
     //Recupera quantidade de dados a rolar
     var vezes = parseInt(text.substring(0, text.indexOf('d')));
     var faces, modif;
-    //Verifica se tem modificador do falor do dado ex:(1d6+1);
+    //Verifica se tem modificador do valor do dado ex:(1d6+1);
     if(/^\d+[d]\d+(\+|-)\d+$/.test(text)){
       //faces do dado a rolar
       faces = (text.indexOf('+') > -1)
@@ -91,7 +99,7 @@ var rolarDado = function(bot, msg, channel){
       //Caso não tenha modificador
       faces = parseInt(text.substring((text.indexOf('d')+1),(text.length)));
     }
-    
+
     var params = {vezes : vezes,faces : faces,modif : modif};
     personagemController.rolarDado(bot, channel, params);
   }
@@ -120,10 +128,10 @@ var comandos = [
   {nome : 'list', comando : listarTodos},
   {nome : 'pv', comando : pontosDeVida},
   {nome : 'xp', comando : experiencia},
-  {nome : 'roll', comando : rolarDado},
-  {nome : 'items', comando : null},
+  {nome : 'item', comando : item},
   {nome : 'weapons', comando : null},
-  {nome : 'armor', comando : null}
+  {nome : 'armor', comando : null},
+  {nome : 'roll', comando : rolarDado}
 ];
 
 module.exports = comandos;
