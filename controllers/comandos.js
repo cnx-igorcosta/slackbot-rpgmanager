@@ -5,6 +5,8 @@ var help = function(bot, msg, channel){
 }
 
 var salvarNovo = function(bot, msg, channel){
+  //Texto deve ser enviado com estrutura nome:valor separando por virgula entre parametros
+  // Ex: "new nome:Aragorn, raca:humano, classe:guerreiro, for:18, des:15, con:16, int:14, sab:16, car:12, pv:10"
   var personagemTxt = '{\"' + msg + '\"}';
   //remove new statement and include "" in all params to parse to JSON
   personagemTxt = personagemTxt.replace(/new/g, "").replace(/\s/g,"")
@@ -20,9 +22,11 @@ var listarTodos = function(bot, msg, channel){
 }
 
 var pontosDeVida = function(bot, msg, channel){
-  //verifica se comando está correto ex: 'pv Gandalf +5' o símbolo pode ser
-  //(+,- ou =) somar ao pv já existente, diminuir ou gerar novo valor.
-  if(/^(p|P)(v|V)((T|t)otal)?\s+\w+(\s\w+)*\s+(\+|-|=)\s*\d+\s*$/.test(msg)){
+  //verifica se texto se encaixa na estrutura:
+  //[PV, Pv, pV, pv ou pvtotal] [nome do personagem] [+, - ou =] [quantidade de pvs]
+  //Ex: 'pv Gandalf +5' o símbolo pode ser (+,- ou =) somar ao pv já existente,
+  //diminuir ou gerar novo valor.
+  if(/^(p|P)(v|V)((T|t)otal)?\s+\w+(\s\w+)*\s*(\+|-|=)\s*\d+\s*$/.test(msg)){
     //substitui pv ou pvTotal por ''
     var pv = msg.replace(/(p|P)(v|V)((T|t)otal)?/g,"");
     //pega o nome
@@ -30,6 +34,7 @@ var pontosDeVida = function(bot, msg, channel){
     var params = {nome: dados.nome, valor: valor};
 
     if((msg.toLowerCase().indexOf('pvtotal')) > -1){
+      //seta pv total
       personagemController.setPvTotal(bot, channel, params);
     }else{
       if((dados.simbolo.indexOf('+')) > -1){
@@ -43,12 +48,16 @@ var pontosDeVida = function(bot, msg, channel){
         personagemController.setPv(bot, channel, params);
       }
     }
+  } else if(/^(p|P)(v|V)((T|t)otal)?\s+\w+(\s\w+)*\s*\?\s*$/.test(msg)){
+
   }
 };
 
 var experiencia = function(bot, msg, channel){
-  //verifica se comando está correto ex: 'xp Gandalf +1000' o símbolo pode ser
-  //(+,- ou =) somar a xp já existente, diminuir ou gerar novo valor.
+  //verifica se texto se encaixa na estrutura:
+  //{[XP,Xp,xP ou xp] [nome do personagem] [+, - ou =] [quantidade de experiencia]}
+  //Ex: 'xp Gandalf +1000' o símbolo pode ser (+,- ou =) somar a xp já existente,
+  //diminuir ou gerar novo valor.
   if(/^(x|X)(p|P)\s+\w+(\s\w+)*\s+(\+|-|=)\s*\d+\s*$/.test(msg)){
     //substitui xp por ''
     var xp = msg.replace(/^(x|X)(p|P)/g,"");
@@ -70,14 +79,27 @@ var experiencia = function(bot, msg, channel){
 };
 
 var item = function(bot, msg, channel){
-  //TODO: testar regex 'item leoncio + (vassoura,1)', 'item leoncio - (flecha caça,1)'
-  if(/^(I|i)tem\s+\w+(\s\w+)*\s*(\+|-|=)\s*\(\s*\w+(\s\w+)*\s*[,]\s*\d+\s*\)\s*$/.test(msg)){
+  //verifica se texto se encaixa na estrutura:
+  //{[Item ou item] [nome personagem] [+ ou -] [(][nome do item],[descricao - opcional],[quantidade][)]}
+  //Exemplo: 'item Gandalf + (Glamdring, brilha perto de orcs, 1)', 'item Legolas - (flecha caça, 1)'
+  //o símbolo pode ser (+, - ou ?) (adicionar item, diminuir item, consultar todos)
+  if(/^(I|i)tem\s+\w+(\s\w+)*\s*(\+|-)\s*\(\s*\w+(\s\w+)*\s*[,](\s*\w+(\s\w+)*\s*[,])?\s*\d+\s*\)\s*$/.test(msg)){
     //substitui item por ''
     var xp = msg.replace(/^(I|i)tem/g,"");
+
+
+  //verifica se texto se encaixa na estrutura:
+  //{[Item ou item] [nome personagem] [?]}
+  //Ex: 'Item Golum ?'
+  }else if(/^(I|i)tem\s+\w+(\s\w+)*\s*\?\s*$/.test(msg)){
+
   }
 };
 
 var rolarDado = function(bot, msg, channel){
+  //verifica se texto se encaixa na estrutura:
+  //{[Roll ou roll] [quantidade de dados][D ou d][quantidade de faces do dado] [+ ou -, opcional][modificador, opcional]}
+  //Ex: 'Roll 1d6', 'roll 1d20 -1', 'roll 2d8 +2'
   if(/^(R|r)oll\s*\d+(D|d)\d+\s*((\+|-)\d+\s*)?$/.test(msg)){
     //Remove texto Roll
     var text = msg.replace(/(R|r)oll/g,"").replace(/\s/g,"").toLowerCase();

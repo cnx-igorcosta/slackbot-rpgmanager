@@ -66,23 +66,3 @@ var getChannelById = function (channelId) {
         return item.id === channelId;
     })[0];
 };
-
-/*var rolarDado = function(message){
-  var dado = message.replace(/\s/g,'').replace(/(D|d)ice/g,'');
-  var resultado = "Resultado ";
-  var total = 0;
-  if(/^\d+[d]\d+$/.test(dado)){
-    var vezes = parseInt(dado.substring(0, dado.indexOf('d')));
-    var faces = parseInt(dado.substring((dado.indexOf('d')+1),(dado.length)));
-    resultado = resultado + dado + " = ";
-    for(var i = 0; i<(vezes); i++){
-      var valor = Math.floor((Math.random() * faces) + 1);
-      if(i > 0){
-       resultado = resultado + ", "
-      }
-      resultado = resultado + valor;
-      total = total+valor;
-    }
-  }
-  return (total ? resultado + "; Total: "+total : null);
-};*/

@@ -6,15 +6,32 @@ module.exports = function () {
 
   var controller = {};
 
+  controller.erro = function(bot, channel, msg){
+    bot.postMessageToChannel(channel.name, msg, {as_user: true});
+  }
+
   controller.help = function(bot, channel){
 
     var retorno = 'rpgmanager comandos:\n'+
-    '- new - Salva novo personagem, nome, atributos e pv devem ser enviados. Ex: "new nome:Aragorn, for:18, des:15, con:16, int:14, sab:16, car:12, pv:10".\n'+
-    '- list - Lista os nomes de todos os personagens salvos.\n'+
-    '- pvTotal - cria novo valor de pv total. Ex: "pvTotal Gandald = 50".\n'+
-    '- pv - Adiciona, remove ou gera pv ao personagem. Ex: "pv Aragorn +3", ou "pv Aragorn -5" ou pv Aragorn = 20.\n'+
-    '- xp - Adiciona ou remove xp ao personagem. Ex: "xp Legolas +300" ou "pv Legolas -50".\n'
-    '- roll - Rolagem de dado, (quantidade dados)"d"(faces dado)(modificador-opcional). Ex: "roll 3d6", "roll 1d20+1", "roll 2d8-3".\n';
+    '- new - Salva novo personagem, nome, raca e classe,  atributos e pv devem ser enviados.\n'+
+    '   Ex: "new nome:Aragorn, raca:humano, classe:guerreiro, for:18, des:15, con:16, int:14, sab:16, car:12, pv:10".\n\n'+
+    '- list - Lista os nomes de todos os personagens salvos.\n\n'+
+    '- pvTotal - cria novo valor de pv total do personagem seguindo a estrutura:\n'+
+    '   [PVTotal, PvTotal, pVtotal ou pvtotal] [nome do personagem] [=] [quantidade de pvs]\n'+
+    '   Ex: "pvTotal Gandald = 50".\n\n'+
+    '- pv - Adiciona, remove, gera ou consulta pv do personagem seguindo a estrutura:\n'+
+    '   [PV, Pv, pV ou pv] [nome do personagem] [+, - ou =] [quantidade de pvs].\n'+
+    '   Ex: "pv Aragorn +3", ou "pv Aragorn -5" ou pv Aragorn = 20.\n'+
+    '   Também pode consultar pv do personagem utilizando o comando "?".\n'+
+    '   Ex: pv Aragorn ?\n\n'+
+    '- xp - Adiciona ou remove xp ao personagem seguindo a estrutura:\n'+
+    '   [XP,Xp,xP ou xp] [nome do personagem] [+, - ou =] [quantidade de experiencia]\n'+
+    '   Ex: "xp Legolas +300" ou "pv Legolas -50".\n'
+    '   Para consultar xp do personagem utilize o comando "?".\n'+
+    '   Ex: xp Gimli ?\n\n'+
+    '- roll - Rolagem de dados seguindo a estrutura: '+
+    '   [Roll ou roll] [quantidade de dados][D ou d][quantidade de faces do dado] ([+ ou -][modificador], opcional).\n'+
+    '   Ex: "roll 3d6", "roll 1d20+1", "roll 2d8-3".';
 
     bot.postMessageToChannel(channel.name, retorno, {as_user: true});
   };
@@ -39,9 +56,12 @@ module.exports = function () {
     });
 
     pers.save(function(err) {
-      if (err) throw err;
+      if (err) {console.log(err);this.erro(bot, channel, 'Erro ao salvar personagem');}
+      var retorno = 'Nome: ' + personagem.nome + ', Raça: ' + personagem.raca + ', Classe:' +
+        personagem.classe +', FOR ' + personagem.for + ', DES ' + personagem.des+ ', CON ' + personagem.con +
+        ', INT '+ personagem.int + ', SAB '+ personagem.sab +', CAR ' + personagem.car;
 
-      bot.postMessageToChannel(channel.name, 'Salvou '+JSON.stringify(personagem), {as_user: true});
+      bot.postMessageToChannel(channel.name, 'Salvou '+retorno, {as_user: true});
     });
   };
 
@@ -178,7 +198,7 @@ module.exports = function () {
       var valor = Math.floor((Math.random() * params.faces) + 1);
 
       if(index > 0){resultado += ", "}
-
+      //regra diferente caso tenha modificador. Obs: nunca um resultado vai ser menor que 1
       if(params.modif){
         resultado = resultado + '(' + valor + ((params.modif > 0) ? '+' : '') + params.modif + ')';
         total += (valor + params.modif) <= 0 ? 1 : (valor + params.modif);
