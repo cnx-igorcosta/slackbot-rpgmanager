@@ -6,11 +6,12 @@ module.exports = function () {
 
   var controller = {};
 
-  controller.erro = function(bot, channel, msg){
-    bot.postMessageToChannel(channel.name, msg, {as_user: true});
+  controller.erro = function(err, params, msg){
+    console.log(err);
+    params.bot.postMessageToChannel(params.channel.name, msg, {as_user: true});
   }
 
-  controller.help = function(bot, channel){
+  controller.help = function(params){
 
     var retorno = 'rpgmanager comandos:\n'+
     '- new - Salva novo personagem, nome, raca e classe,  atributos e pv devem ser enviados.\n'+
@@ -33,256 +34,193 @@ module.exports = function () {
     '   [Roll ou roll] [quantidade de dados][D ou d][quantidade de faces do dado] ([+ ou -][modificador], opcional).\n'+
     '   Ex: "roll 3d6", "roll 1d20+1", "roll 2d8-3".';
 
-    bot.postMessageToChannel(channel.name, retorno, {as_user: true});
+    params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
   };
 
   //Salva novo personagem no banco
-  controller.salvar = function(bot, personagem, channel){
+  controller.salvar = function(params){
 
     var pers = new Personagem({
-      nome: personagem.nome,
-      for: parseInt(personagem.for),
-      des: parseInt(personagem.des),
-      con: parseInt(personagem.con),
-      int: parseInt(personagem.int),
-      sab: parseInt(personagem.sab),
-      car: parseInt(personagem.car),
-      pv: parseInt(personagem.pv),
-      pvTotal: parseInt(personagem.pv),
+      nome: params.pers.nome,
+      for: parseInt(params.pers.for),
+      des: parseInt(params.pers.des),
+      con: parseInt(params.pers.con),
+      int: parseInt(params.pers.int),
+      sab: parseInt(params.pers.sab),
+      car: parseInt(params.pers.car),
+      pv: parseInt(params.pers.pv),
+      pvTotal: parseInt(params.pers.pv),
       xp: 0,
       nivel: 1,
-      pvTotal: personagem.pvTotal ? (parseInt(personagem.pvTotal)) : 0
-      pv: personagem.pv ? (parseInt(personagem.pv)) : 0
-      classe: personagem.classe,
-      raca: personagem.raca
+      pvTotal: params.pers.pvTotal ? (parseInt(params.pers.pvTotal)) : 0,
+      pv: params.pers.pv ? (parseInt(params.pers.pv)) : 0,
+      classe: params.pers.classe,
+      raca: params.pers.raca
     });
 
     pers.save(function(err) {
-      if (err) {console.log(err);controller.erro(bot, channel, 'Erro ao salvar personagem');}
+      if (err) {console.log(err);controller.erro(params, 'Erro ao salvar personagem');}
       else{
-        var retorno = 'Nome: ' + personagem.nome + ', Raça: ' + personagem.raca + ', Classe:' +
-        personagem.classe +', FOR ' + personagem.for + ', DES ' + personagem.des+ ', CON ' + personagem.con +
-        ', INT '+ personagem.int + ', SAB '+ personagem.sab +', CAR ' + personagem.car;
+        var retorno = 'Nome: ' + params.pers.nome + ', Raça: ' + params.pers.raca + ', Classe:' +
+        params.pers.classe +', FOR ' + params.pers.for + ', DES ' + params.pers.des+ ', CON ' + params.pers.con +
+        ', INT '+ params.pers.int + ', SAB '+ params.pers.sab +', CAR ' + params.pers.car;
 
-        bot.postMessageToChannel(channel.name, 'Salvou '+retorno, {as_user: true});
+        params.bot.postMessageToChannel(params.channel.name, 'Salvou '+retorno, {as_user: true});
       }
     });
   };
 
   //Lista os nomes de todos os personagens salvos no banco
-  controller.listar = function(bot, msg, channel){
+  controller.listar = function(params){
 
     Personagem.find({}, function(err, personagens) {
-      if (err) {console.log(err);controller.erro(bot, channel, 'Erro ao listar personagens');}
+      if (err) {console.log(err);controller.erro(params, 'Erro ao listar personagens');}
       else{
         var retorno = '';
         for(var index = 0; index < personagens.length; index++){
           retorno += 'Personagem: '+ personagens[index].nome + '\n'
         }
-        bot.postMessageToChannel(channel.name, retorno, {as_user: true});
+        params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
       }
     });
   };
 
   //Altera pvTotal do personagem para o valor enviado
-  controller.setPvTotal = function(bot, channel, params){
-    var query = {nome: { $regex : new RegExp(params.nome, "i") }}
-    ,update = {pvTotal : params.valor}
-    ,options = {upsert : true};
-    Personagem.findOne(query, function(err, pers){
-      if (err) {console.log(err);controller.erro(bot, channel, 'Personagem '+params.nome+'não encontrado');}
-      else{
-        if(pers.pv){
-          Personagem.update(query, update, options, function(err){
-            if (err) {console.log(err);controller.erro(bot, channel, 'Erro ao alterar pv total do personagem');}
+  controller.setPvTotal = function(params){
 
-            var retorno = 'Personagem: ' + params.nome + ', pv: '+ params.valor+'/'+params.valor;
-            bot.postMessageToChannel(channel.name, retorno, {as_user: true});
-          });
-        }else{
-          controller.erro(bot, channel, 'Personagem '+params.nome+' não tem pv ou não existe. use pvTotal para gerar pv do personagem.');
-        }
-      }
+  var callback = function(params, query, pers){
+
+    var update = {pvTotal : params.valor}
+    ,options = {upsert : true};
+
+    Personagem.update(query, update, options, function(err){
+      if (err) {console.log(err);controller.erro(params, 'Erro ao alterar pv total do personagem');}
+
+      var retorno = 'Personagem: ' + params.nome + ', pv: '+ params.valor+'/'+params.valor;
+      params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
     });
+  };
+
+  controller.buscarPersonagem(params, callback);
   }
 
   //Altera pv do personagem para o valor enviado
-  controller.setPv = function(bot, channel, params){
-    var query = {nome: { $regex : new RegExp(params.nome, "i") }}
-    ,update = {pv : params.valor}
-    ,options = {upsert : true};
+  controller.setPv = function(params){
 
-    Personagem.findOne(query, function(err, pers){
-      if (err) {console.log(err);controller.erro(bot, channel, 'Personagem '+params.nome+'não encontrado');}
-      else{
-        if(pers.pv){
-          Personagem.update(query, update, options, function(err){
-            if (err) {console.log(err);controller.erro(bot, channel, 'Erro ao alterar pv do personagem');}
+    var callback = function(params, query, pers){
 
-            var retorno = 'Personagem: ' + params.nome + ', pv: '+ params.valor;
-            bot.postMessageToChannel(channel.name, retorno, {as_user: true});
-          });
-        }else{
-          controller.erro(bot, channel, 'Personagem '+params.nome+' não tem pv ou não existe. use pvTotal para gerar pv do personagem.');
-        }
-      }
-    });
+      var valor = parseInt(params.valor);
+      var pv = valor >= pers.pvTotal ? pers.pvTotal : valor;
+      var update = {pv : pv},
+        options = {upsert : true};
+
+      Personagem.update(query, update, options, function(err){
+        if (err) {console.log(err);controller.erro(params, 'Erro ao alterar pv do personagem');}
+
+        var retorno = 'Personagem: ' + params.nome + ', pv: '+ pv + '/'+pers.pvTotal;
+        params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+      });
+    };
+
+    controller.buscarPersonagem(params, callback);
   }
 
   //Adiciona pv ao personagem
-  controller.addPv = function(bot, channel, params){
-    var query = {nome: { $regex : new RegExp(params.nome, "i") }};
+  controller.addPv = function(params){
 
-    Personagem.findOne(query, function(err, pers){
-      if (err) {console.log(err);controller.erro(bot, channel, 'Personagem '+params.nome+'não encontrado');}
-      else{
-        if(pers.pv){
-          var valor = parseInt(params.valor);
-          //se valor a adicionar for maior que pvTotal então pv == pvTotal
-          var pv = (pers.pv + valor) >= pers.pvTotal ? pers.pvTotal : (pers.pv + valor);
-          console.log('pv: '+pv);
-          var update = {pv : pv}, options = {upsert : true};
+    var callback = function(params, query, pers){
+      var valor = parseInt(params.valor);
+      //se valor a adicionar for maior que pvTotal então pv == pvTotal
+      var pv = (pers.pv + valor) >= pers.pvTotal ? pers.pvTotal : (pers.pv + valor);
+      var update = {pv : pv},
+        options = {upsert : true};
 
-          Personagem.update(query, update, options, function(err){
-            if (err) {console.log(err);controller.erro(bot, channel, 'Erro ao adicionar pv ao personagem');}
+      Personagem.update(query, update, options, function(err){
+        if (err) {console.log(err);controller.erro(params, 'Erro ao adicionar pv ao personagem');}
 
-            var retorno = 'Personagem: ' + params.nome + ', pv: '+ pv +'/'+pers.pvTotal;
-            bot.postMessageToChannel(channel.name, retorno, {as_user: true});
-          });
-        }else{
-          controller.erro(bot, channel, 'Personagem '+params.nome+' não tem pv ou não existe. use pvTotal para gerar pv do personagem.');
-        }
-      }
-    });
+        var retorno = 'Personagem: ' + params.nome + ', pv: '+ pv +'/'+pers.pvTotal;
+        params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+      });
+    };
+    controller.buscarPersonagem(params, callback);
   }
 
   //Remove pv do personagem
-  controller.removePv = function(bot, channel, params){
-    var query = {nome: { $regex : new RegExp(params.nome, "i") }};
+  controller.removePv = function(params){
 
-    Personagem.findOne(query, function(err, pers){
-      if (err) {console.log(err);controller.erro(bot, channel, 'Personagem '+params.nome+'não encontrado');}
-      else{
-        if(pers.pv){
-          var valor = parseInt(params.valor);
-          var pv = (pers.pv - valor) <= 0 ? 0 : (pers.pv - valor);
-          var update = {pv : pv}, options = {upsert : true};
+    var callback = function(params, query, pers){
+      var valor = parseInt(params.valor);
+      var pv = (pers.pv - valor) <= 0 ? 0 : (pers.pv - valor);
+      var update = {pv : pv},
+        options = {upsert : true};
 
-          Personagem.update(query, update, options, function(err){
-            if (err) {console.log(err);controller.erro(bot, channel, 'Erro ao remover pv do personagem');}
+      Personagem.update(query, update, options, function(err){
+        if (err) {console.log(err);controller.erro(params, 'Erro ao remover pv do personagem');}
 
-            var retorno = 'Personagem: ' + pers.nome + ', pv: '+ pv +'/' +pers.pvTotal;
-            //se valor a remover for maior que o pv então personagem morre.
-            if(pv == 0){retorno = retorno + '. Personagem morto!'}
-            bot.postMessageToChannel(channel.name, retorno, {as_user: true});
-          });
-        }else{
-          controller.erro(bot, channel, 'Personagem '+params.nome+' não tem pv ou não existe. use pvTotal para gerar pv do personagem.')
-        }
-      }
-    });
+        var retorno = 'Personagem: ' + pers.nome + ', pv: '+ pv +'/' +pers.pvTotal;
+        //se valor a remover for maior que o pv então personagem morre.
+        if(pv == 0){retorno = retorno + '. Personagem morto!'}
+        params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+      });
+    };
+
+    controller.buscarPersonagem(params, callback);
   }
 
   //Adiciona xp ao personagem
-  controller.addXp = function(bot, channel, params){
-    var query = {nome: { $regex : new RegExp(params.nome, "i") }};
+  controller.addXp = function(params){
 
-    Personagem.findOne(query, function(err, pers){
-      if (err) {console.log(err);controller.erro(bot, channel, 'Personagem '+params.nome+'não encontrado');}
-      else{
-        if(pers.xp){
-          var xp = pers.xp + parseInt(params.valor);
-          var update = {xp : xp}, options = {upsert : true};
+    var callback = function(params, query, pers){
+      var xp = pers.xp + parseInt(params.valor);
+      var update = {xp : xp},
+        options = {upsert : true};
+      var retorno = 'Personagem: ' + params.nome + ', xp: '+ xp;
 
-          Personagem.update(query, update, options, function(err){
-              if (err) {console.log(err);controller.erro(bot, channel, 'Erro ao adicionar xp ao personagem');}
+      Personagem.update(query, update, options, function(err){
+        if (err) {console.log(err);controller.erro(params, 'Erro ao adicionar xp ao personagem');}
 
-            var retorno = 'Personagem: ' + params.nome + ', xp: '+ xp;
-            bot.postMessageToChannel(channel.name, retorno, {as_user: true});
-          });
-        }else{
-          controller.erro(bot, channel, 'Personagem '+params.nome+' não tem xp ou não existe.')
-        }
-      }
-    });
-  }
-  // controller.addXp = function(bot, channel, params){
-  //
-  //   var callback = function(bot, channel, params){
-  //     var xp = pers.xp + parseInt(params.valor);
-  //     var update = {xp : xp}, options = {upsert : true};
-  //
-  //     Personagem.update(query, update, options, function(err){
-  //         if (err) {console.log(err);controller.erro(bot, channel, 'Erro ao adicionar xp ao personagem');}
-  //
-  //       var retorno = 'Personagem: ' + params.nome + ', xp: '+ xp;
-  //       bot.postMessageToChannel(channel.name, retorno, {as_user: true});
-  //     });
-  //   };
+        params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+      });
+    };
 
-    controller.buscarPersonagem(bot, channel, params, )
-    var query = {nome: { $regex : new RegExp(params.nome, "i") }};
-
-    Personagem.findOne(query, function(err, pers){
-      if (err) {console.log(err);controller.erro(bot, channel, 'Personagem '+params.nome+'não encontrado');}
-      else{
-        if(pers.xp){
-          var xp = pers.xp + parseInt(params.valor);
-          var update = {xp : xp}, options = {upsert : true};
-
-          Personagem.update(query, update, options, function(err){
-              if (err) {console.log(err);controller.erro(bot, channel, 'Erro ao adicionar xp ao personagem');}
-
-            var retorno = 'Personagem: ' + params.nome + ', xp: '+ xp;
-            bot.postMessageToChannel(channel.name, retorno, {as_user: true});
-          });
-        }else{
-          controller.erro(bot, channel, 'Personagem '+params.nome+' não tem xp ou não existe.')
-        }
-      }
-    });
-  }
+    controller.buscarPersonagem(params, callback);
+  };
 
   //Remove xp do personagem
-  controller.removeXp = function(bot, channel, params){
+  controller.removeXp = function(params){
+    var callback = function(params, query, pers){
+      var xp = (pers.xp - parseInt(params.valor)) <= 0 ? 0 : (pers.xp - parseInt(params.valor));
+      var update = {xp : xp},
+        options = {upsert : true};
+
+      Personagem.update(query, update, options, function(err){
+        if (err) throw err;if (err) {console.log(err);controller.erro(params, 'Erro ao remover xp do personagem');}
+
+        var retorno = 'Personagem: ' + params.nome + ', xp: '+ xp;
+        params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+      });
+    };
+
+    controller.buscarPersonagem(params, callback);
+  };
+
+  //Busca o personagem pelo nome e executa callback
+  controller.buscarPersonagem = function(params, callback){
+
     var query = {nome: { $regex : new RegExp(params.nome, "i") }};
 
     Personagem.findOne(query, function(err, pers){
-      if (err) {console.log(err);controller.erro(bot, channel, 'Personagem '+params.nome+'não encontrado');}
-      else{
-        if(pers.xp){
-          var xp = (pers.xp - parseInt(params.valor)) >= 0 ? 0 : (pers.xp - parseInt(params.valor));
-          var update = {xp : xp}, options = {upsert : true};
-
-          Personagem.update(query, update, options, function(err){
-            if (err) throw err;if (err) {console.log(err);controller.erro(bot, channel, 'Erro ao remover xp do personagem');}
-
-            var retorno = 'Personagem: ' + params.nome + ', xp: '+ xp;
-            bot.postMessageToChannel(channel.name, retorno, {as_user: true});
-          });
-        }else{
-          controller.erro(bot, channel, 'Personagem '+params.nome+' não tem xp ou não existe.')
-        }
+      if (err) {controller.erro(err, params, 'Erro ao buscar personagem '+params.nome);}
+      else if(pers._id){
+        callback(params, query, pers);
+      }else{
+        controller.erro(params, 'Personagem '+params.nome+' não foi encontrado.')
       }
     });
   };
 
-  controller.buscarPersonagem(bot, channel, params, callback, callbackErro){
-
-    var query = {nome: { $regex : new RegExp(params.nome, "i") }};
-
-    Personagem.findOne(query, function(err, pers){
-      if (err) {console.log(err);controller.erro(bot, channel, 'Personagem '+params.nome+'não encontrado');}
-      else if(pers._id){
-        callback(bot, channel, params);
-      }else{
-        callbackErro(bot, channel, params)
-      }
-    });
-  }
-
   //Função rolar dado
-  controller.rolarDado = function(bot, channel, params){
+  controller.rolarDado = function(params){
     var resultado = 'Resultado ' + params.vezes + 'd' + params.faces;
     if(params.modif){
         resultado = (params.modif > 0) ? (resultado + ' + ' + params.modif) : (resultado + ' ' + params.modif);
@@ -305,7 +243,7 @@ module.exports = function () {
       }
     }
     resultado = (total ? resultado + "; Total: "+total : null);
-    bot.postMessageToChannel(channel.name, resultado, {as_user: true});
+    params.bot.postMessageToChannel(params.channel.name, resultado, {as_user: true});
   };
 
   return controller;

@@ -56,7 +56,8 @@ var doComand = function(message) {
   var channel = getChannelById(message.channel);
   for(var index = 0; index < comandos.length; index++){
     if((message.text.toLowerCase().indexOf(comandos[index].nome)) > -1){
-      comandos[index].comando(bot, message.text, channel);
+      var param = {bot:bot, channel:channel, msg:message.text}
+      comandos[index].comando(param);
     }
   }
 }

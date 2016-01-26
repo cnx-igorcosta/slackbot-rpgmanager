@@ -1,76 +1,80 @@
 var personagemController = require('./personagemController');
 
-var help = function(bot, msg, channel){
-  personagemController.help(bot, channel);
+var help = function(params){
+  personagemController.help(params);
 }
 
-var salvarNovo = function(bot, msg, channel){
+var salvarNovo = function(params){
   //Texto deve ser enviado com estrutura nome:valor separando por virgula entre parametros
   // Ex: "new nome:Aragorn, raca:humano, classe:guerreiro, for:18, des:15, con:16, int:14, sab:16, car:12, pv:10"
-  var personagemTxt = '{\"' + msg + '\"}';
+  var personagemTxt = '{\"' + params.msg + '\"}';
   //remove new statement and include "" in all params to parse to JSON
   personagemTxt = personagemTxt.replace(/new/g, "").replace(/\s/g,"")
     .replace(/:/g,"\":\"").replace(/,/g,"\",\"");
-  var personagem = JSON.parse(personagemTxt);
-  personagemController.salvar(bot, personagem, channel);
+  //TODO: try/catch
+  params.pers = JSON.parse(personagemTxt);
+  personagemController.salvar(params);
 }
 
-var listarTodos = function(bot, msg, channel){
-  if(/^(L|l)ist\s*$/.test(msg)){
-    personagemController.listar(bot, msg, channel);
+var listarTodos = function(params){
+  if(/^(L|l)ist\s*$/.test(params.msg)){
+    personagemController.listar(params);
   }
 }
 
-var pontosDeVida = function(bot, msg, channel){
+var pontosDeVida = function(params){
   //verifica se texto se encaixa na estrutura:
   //[PV, Pv, pV, pv ou pvtotal] [nome do personagem] [+, - ou =] [quantidade de pvs]
   //Ex: 'pv Gandalf +5' o símbolo pode ser (+,- ou =) somar ao pv já existente,
   //diminuir ou gerar novo valor.
-  if(/^(p|P)(v|V)((T|t)otal)?\s+\w+(\s\w+)*\s*(\+|-|=)\s*\d+\s*$/.test(msg)){
+  if(/^(p|P)(v|V)((T|t)otal)?\s+\w+(\s\w+)*\s*(\+|-|=)\s*\d+\s*$/.test(params.msg)){
     //substitui pv ou pvTotal por ''
-    var pv = msg.replace(/(p|P)(v|V)((T|t)otal)?/g,"");
+    var pv = params.msg.replace(/(p|P)(v|V)((T|t)otal)?/g,"");
     //pega o nome
     var dados = quebrarValores(pv);
-    var params = {nome: dados.nome, valor: dados.valor};
+    params.nome = dados.nome;
+    params.valor = dados.valor;
 
-    if((msg.toLowerCase().indexOf('pvtotal')) > -1){
+    if((params.msg.toLowerCase().indexOf('pvtotal')) > -1){
       //seta pv total
-      personagemController.setPvTotal(bot, channel, params);
+      personagemController.setPvTotal(params);
     }else{
       if((dados.simbolo.indexOf('+')) > -1){
         //Adiciona pvs
-        personagemController.addPv(bot, channel, params);
+        personagemController.addPv(params);
       }else if((dados.simbolo.indexOf('-')) > -1){
         //Remove pvs
-        personagemController.removePv(bot, channel, params);
+        personagemController.removePv(params);
       }else{
         //Seta novo valor
-        personagemController.setPv(bot, channel, params);
+        personagemController.setPv(params);
       }
     }
-  } else if(/^(p|P)(v|V)((T|t)otal)?\s+\w+(\s\w+)*\s*\?\s*$/.test(msg)){
-
+  } else if(/^(p|P)(v|V)((T|t)otal)?\s+\w+(\s\w+)*\s*\?\s*$/.test(params.msg)){
+    //TODO
   }
 };
 
-var experiencia = function(bot, msg, channel){
+var experiencia = function(params){
   //verifica se texto se encaixa na estrutura:
   //{[XP,Xp,xP ou xp] [nome do personagem] [+, - ou =] [quantidade de experiencia]}
   //Ex: 'xp Gandalf +1000' o símbolo pode ser (+,- ou =) somar a xp já existente,
   //diminuir ou gerar novo valor.
-  if(/^(x|X)(p|P)\s+\w+(\s\w+)*\s+(\+|-|=)\s*\d+\s*$/.test(msg)){
+  if(/^(x|X)(p|P)\s+\w+(\s\w+)*\s+(\+|-|=)\s*\d+\s*$/.test(params.msg)){
     //substitui xp por ''
-    var xp = msg.replace(/^(x|X)(p|P)/g,"");
+    var xp = params.msg.replace(/^(x|X)(p|P)/g,"");
     var dados = quebrarValores(xp);
-    var params = {nome: dados.nome, valor: dados.valor};
+    params.nome = dados.nome;
+    params.valor = dados.valor;
 
     if((dados.simbolo.indexOf('+')) > -1){
       //Adiciona xp
-      personagemController.addXp(bot, channel, params);
+      personagemController.addXp(params);
     }else if((dados.simbolo.indexOf('-')) > -1){
       //Remove xp
-      personagemController.removeXp(bot, channel, params);
+      personagemController.removeXp(params);
     }
+    //TODO: comando para lidar com 'xp Gandalf ?'
     // }else{
     //   //Seta novo valor
     //   personagemController.setXp(bot, channel, params);
@@ -78,31 +82,31 @@ var experiencia = function(bot, msg, channel){
   }
 };
 
-var item = function(bot, msg, channel){
+var item = function(params){
   //verifica se texto se encaixa na estrutura:
   //{[Item ou item] [nome personagem] [+ ou -] [(][nome do item],[descricao - opcional],[quantidade][)]}
   //Exemplo: 'item Gandalf + (Glamdring, brilha perto de orcs, 1)', 'item Legolas - (flecha caça, 1)'
   //o símbolo pode ser (+, - ou ?) (adicionar item, diminuir item, consultar todos)
-  if(/^(I|i)tem\s+\w+(\s\w+)*\s*(\+|-)\s*\(\s*\w+(\s\w+)*\s*[,](\s*\w+(\s\w+)*\s*[,])?\s*\d+\s*\)\s*$/.test(msg)){
+  if(/^(I|i)tem\s+\w+(\s\w+)*\s*(\+|-)\s*\(\s*\w+(\s\w+)*\s*[,](\s*\w+(\s\w+)*\s*[,])?\s*\d+\s*\)\s*$/.test(params.msg)){
     //substitui item por ''
-    var xp = msg.replace(/^(I|i)tem/g,"");
+    var xp = params.msg.replace(/^(I|i)tem/g,"");
 
 
   //verifica se texto se encaixa na estrutura:
   //{[Item ou item] [nome personagem] [?]}
   //Ex: 'Item Golum ?'
-  }else if(/^(I|i)tem\s+\w+(\s\w+)*\s*\?\s*$/.test(msg)){
-
+  }else if(/^(I|i)tem\s+\w+(\s\w+)*\s*\?\s*$/.test(params.msg)){
+    //TODO
   }
 };
 
-var rolarDado = function(bot, msg, channel){
+var rolarDado = function(params){
   //verifica se texto se encaixa na estrutura:
   //{[Roll ou roll] [quantidade de dados][D ou d][quantidade de faces do dado] [+ ou -, opcional][modificador, opcional]}
   //Ex: 'Roll 1d6', 'roll 1d20 -1', 'roll 2d8 +2'
-  if(/^(R|r)oll\s*\d+(D|d)\d+\s*((\+|-)\d+\s*)?$/.test(msg)){
+  if(/^(R|r)oll\s*\d+(D|d)\d+\s*((\+|-)\d+\s*)?$/.test(params.msg)){
     //Remove texto Roll
-    var text = msg.replace(/(R|r)oll/g,"").replace(/\s/g,"").toLowerCase();
+    var text = params.msg.replace(/(R|r)oll/g,"").replace(/\s/g,"").toLowerCase();
     //Recupera quantidade de dados a rolar
     var vezes = parseInt(text.substring(0, text.indexOf('d')));
     var faces, modif;
@@ -122,8 +126,10 @@ var rolarDado = function(bot, msg, channel){
       faces = parseInt(text.substring((text.indexOf('d')+1),(text.length)));
     }
 
-    var params = {vezes : vezes,faces : faces,modif : modif};
-    personagemController.rolarDado(bot, channel, params);
+    params.vezes = vezes;
+    params.faces = faces
+    params.modif = modif;
+    personagemController.rolarDado(params);
   }
 };
 
