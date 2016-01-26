@@ -31,7 +31,7 @@ var pontosDeVida = function(bot, msg, channel){
     var pv = msg.replace(/(p|P)(v|V)((T|t)otal)?/g,"");
     //pega o nome
     var dados = quebrarValores(pv);
-    var params = {nome: dados.nome, valor: valor};
+    var params = {nome: dados.nome, valor: dados.valor};
 
     if((msg.toLowerCase().indexOf('pvtotal')) > -1){
       //seta pv total
@@ -148,11 +148,14 @@ var comandos = [
   {nome: 'rpghelp', comando : help},
   {nome : 'new', comando : salvarNovo},
   {nome : 'list', comando : listarTodos},
+  {nome : 'update', comando : null},
+  {nome : 'delete', comando : null},
   {nome : 'pv', comando : pontosDeVida},
   {nome : 'xp', comando : experiencia},
   {nome : 'item', comando : item},
   {nome : 'weapons', comando : null},
   {nome : 'armor', comando : null},
+  {nome : 'stats', comando : null},
   {nome : 'roll', comando : rolarDado}
 ];
 
