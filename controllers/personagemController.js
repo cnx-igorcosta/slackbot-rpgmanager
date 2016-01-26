@@ -138,7 +138,7 @@ module.exports = function () {
       Personagem.update(query, update, options, function(err){
         if (err) {console.log(err);controller.erro(params, 'Erro ao adicionar pv ao personagem');}
 
-        var retorno = 'Personagem: ' + params.nome + ', pv: '+ pv +'/'+pers.pvTotal;
+        var retorno = 'Personagem: ' + pers.nome + ', pv: '+ pv +'/'+pers.pvTotal;
         params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
       });
     };
@@ -160,12 +160,23 @@ module.exports = function () {
         var retorno = 'Personagem: ' + pers.nome + ', pv: '+ pv +'/' +pers.pvTotal;
         //se valor a remover for maior que o pv então personagem morre.
         if(pv == 0){retorno = retorno + '. Personagem morto!'}
+
         params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
       });
     };
 
     controller.buscarPersonagem(params, callback);
-  }
+  };
+
+  controller.consultaPv = function(params){
+    var callback = function(params, query, pers){
+      var retorno = 'Personagem: ' + pers.nome + ', pv: '+ pers.pv +'/' +pers.pvTotal;
+      if(pers.pv == 0){retorno = retorno + '. Personagem morto!'}
+
+      params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+    };
+    controller.buscarPersonagem(params, callback);
+  };
 
   //Adiciona xp ao personagem
   controller.addXp = function(params){
@@ -201,6 +212,16 @@ module.exports = function () {
       });
     };
 
+    controller.buscarPersonagem(params, callback);
+  };
+
+  //Consulta xp
+  controller.consultaXp = function(params){
+    var callback = function(params, query, pers){
+      var retorno = 'Personagem: ' + pers.nome + ', xp: '+ pers.xp;
+
+      params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+    };
     controller.buscarPersonagem(params, callback);
   };
 
