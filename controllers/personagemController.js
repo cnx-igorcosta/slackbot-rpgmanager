@@ -55,7 +55,8 @@ module.exports = function () {
       pvTotal: params.pers.pvTotal ? (parseInt(params.pers.pvTotal)) : 0,
       pv: params.pers.pv ? (parseInt(params.pers.pv)) : 0,
       classe: params.pers.classe,
-      raca: params.pers.raca
+      raca: params.pers.raca,
+      dinheiro: 0
     });
 
     pers.save(function(err) {
@@ -225,6 +226,80 @@ module.exports = function () {
     controller.buscarPersonagem(params, callback);
   };
 
+  controller.newItem = function(params, query, pers){
+    var item = {
+      nome: params.item,
+      descricao: params.descricao,
+      quantidade: params.quantidade
+    };
+
+    pers.itens.push(item);
+    var subItem = pers.itens[0];
+    subItem.isNew;
+
+    pers.save(function (err) {
+      if (err) {controller.erro(err, params, 'Erro ao salvar item '+params.item+' do personagem '+params.nome);}
+      else{
+        var retorno = 'Item '+params.item+' adicionado ao personagem '+params.nome;
+        params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+      }
+    });
+  };
+
+  controller.addItem = function(params){
+
+    var callback = function(params, query, pers){
+      //Personagem ainda nao possui item
+      if(pers.itens.length == 0){
+        controller.newItem(params, query, pers);
+      //Personagem ja possui item
+      }else{
+
+        var achou = false;
+        for(var index = 0; index < pers.itens.length; index++){
+
+           if(pers.itens[index].nome.toLowerCase() === params.item.toLowerCase()){
+             achou = true;
+             var quantidade = pers.itens[index].quantidade + parseInt(params.quantidade);
+
+             var query = {'itens._id': pers.itens[index]._id}
+             var update = {'$set':  {'itens.$.quantidade': quantidade}};
+             var options = {upsert : true};
+
+             Personagem.update(query, update, options, function(err){
+               if (err) {controller.erro(err, params, 'Erro ao salvar item '+params.item+' do personagem '+params.nome);}
+               else{
+                 var retorno = 'Item '+params.item+' adicionado ao personagem '+params.nome;
+                 params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+              }
+             });
+           }
+         }
+         if(!achou){
+           controller.newItem(params, query, pers);
+         }
+      }
+    };
+    controller.buscarPersonagem(params, callback);
+  };
+
+  controller.listItens = function(params){
+
+    var callback = function(params, query, pers){
+      var retorno = pers.itens.length ? 'Itens do '+pers.nome+':' : 'Personagem '+pers.nome+ ' não possui itens';
+      for(var index = 0; index < pers.itens.length; index++){
+        retorno += '\n  - nome: '+ pers.itens[index].nome;
+        if(pers.itens[index].descricao){
+          retorno +=' ("' + pers.itens[index].descricao + '")';
+        }
+        retorno += ' x' + pers.itens[index].quantidade;
+      }
+      params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+    };
+
+    controller.buscarPersonagem(params, callback);
+  }
+
   //Busca o personagem pelo nome e executa callback
   controller.buscarPersonagem = function(params, callback){
 
@@ -232,10 +307,10 @@ module.exports = function () {
 
     Personagem.findOne(query, function(err, pers){
       if (err) {controller.erro(err, params, 'Erro ao buscar personagem '+params.nome);}
-      else if(pers._id){
+      else if(pers != null && pers._id){
         callback(params, query, pers);
       }else{
-        controller.erro(params, 'Personagem '+params.nome+' não foi encontrado.')
+        controller.erro(err, params, 'Personagem '+params.nome+' não foi encontrado.')
       }
     });
   };

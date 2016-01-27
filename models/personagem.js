@@ -1,6 +1,12 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+var itemSchema = new Schema({
+  nome:String,
+  descricao:String,
+  quantidade:Number
+});
+
 var personagemSchema = new Schema({
   nome : {type : String, index: {unique: true}},
   for : Number,
@@ -12,12 +18,12 @@ var personagemSchema = new Schema({
   pv : Number,
   pvTotal: Number,
   xp: Number,
-  //nivel: Number,
+  nivel: Number,
   classe: String,
   raca: String,
   //talentos: [String],
-  //dinheiro: Number,
-  //itens: [{nome:String, descricao:String, quantidade:Number],
+  dinheiro: Number,
+  itens: [itemSchema],
   //armas: [{nome:String, descricao:String, quantidade: Number, dano:String, ba:Number, equipada: Boolean}],
   //armaduras: [{nome:String, descricao: String, quantidade: Number, ca:Number, equipada: Boolean}],
   //magias[String]
