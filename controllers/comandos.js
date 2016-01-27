@@ -107,8 +107,12 @@ var item = function(params){
     params.descricao = dados.descricao;
     params.quantidade = dados.quantidade ? dados.quantidade : 1;
 
+  if((dados.simbolo.indexOf('+')) > -1){
     personagemController.addItem(params);
-
+  }
+  else if((dados.simbolo.indexOf('-')) > -1){
+    personagemController.removeItem(params);
+  }
   //verifica se texto se encaixa na estrutura:
   //{[Item ou item] [nome personagem] [?]}
   //Ex: 'Item Golum ?'
@@ -119,6 +123,29 @@ var item = function(params){
     personagemController.listItens(params);
   }
 };
+
+var gold = function(params){
+  //verifica se texto se encaixa na estrutura:
+  //[Gold ou gold] [nome personagem] [+ ou -] [quantidade]
+  //Exemplo: 'Gold Gimli + 100', 'Gold Pipin - 10'
+  //o símbolo pode ser (+, - ou ?) (adicionar gold, diminuir gold, consultar gold)
+  if(/^(G|g)old\s*\w+(\s\w+)*\s*(\+|-)\s*\d+\s*$/.test(params.msg)){
+
+    if((dados.simbolo.indexOf('+')) > -1){
+      personagemController.addGold(params);
+    }
+    else if((dados.simbolo.indexOf('-')) > -1){
+      personagemController.removeGold(params);
+    }
+  }
+  //verifica se texto se encaixa na estrutura:
+  //[Gold ou gold] [nome personagem] [?]
+  //Ex: 'Gold Frodo ?'
+  else if(/^(G|g)old\s*\w+(\s\w+)*\s*\?\s*$/.test(params.msg)){
+
+    personagemController.listGold(params);
+  }
+}
 
 var rolarDado = function(params){
   //verifica se texto se encaixa na estrutura:

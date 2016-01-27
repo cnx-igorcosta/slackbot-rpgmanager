@@ -23,13 +23,15 @@ module.exports = function () {
     '- pv - Adiciona, remove, gera ou consulta pv do personagem seguindo a estrutura:\n'+
     '   [PV, Pv, pV ou pv] [nome do personagem] [+, - ou =] [quantidade de pvs].\n'+
     '   Ex: "pv Aragorn +3", ou "pv Aragorn -5" ou pv Aragorn = 20.\n'+
-    '   Também pode consultar pv do personagem utilizando o comando "?".\n'+
-    '   Ex: pv Aragorn ?\n\n'+
+    '   Para consultar pv do personagem utilize o comando "?". Ex: pv Aragorn ?\n\n'+
     '- xp - Adiciona ou remove xp ao personagem seguindo a estrutura:\n'+
     '   [XP,Xp,xP ou xp] [nome do personagem] [+, - ou =] [quantidade de experiencia]\n'+
     '   Ex: "xp Legolas +300" ou "pv Legolas -50".\n'
-    '   Para consultar xp do personagem utilize o comando "?".\n'+
-    '   Ex: xp Gimli ?\n\n'+
+    '   Para consultar xp do personagem utilize o comando "?".Ex: xp Gimli ?\n\n'+
+    '- item - Adiciona, remove ou consulta itens do personagem: '+
+    '   [Item, item, Itens ou itens] [nome do personagem] [+ ou -][(][nome do item][,descricao do item - opcional][,quantidade a adicionar/remover - opcional][)].\n'+
+    '   Ex: "Item Gandalf + (Espada, Grlamdring magica, 1)" ou Itens Legolas - (flecha caca,10)\n'+
+    '   Para consultar os itens do personagem utilize o comando "?". Ex: "Item Bilbo ?" ou "Itens Merrin ?"'
     '- roll - Rolagem de dados seguindo a estrutura: '+
     '   [Roll ou roll] [quantidade de dados][D ou d][quantidade de faces do dado] ([+ ou -][modificador], opcional).\n'+
     '   Ex: "roll 3d6", "roll 1d20+1", "roll 2d8-3".';
@@ -244,6 +246,47 @@ module.exports = function () {
         params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
       }
     });
+  };
+
+  controller.removeItem = function(params){
+
+    var callback = function(params, query, pers){
+      if(pers.itens.length > 0){
+        var quantRemover = parseInt(params.quantidade);
+
+        for(var index = 0; index < pers.itens.length; index++){
+          if(pers.itens[index].nome.toLowerCase() === params.item.toLowerCase()){
+
+            var quantidade = pers.itens[index].quantidade - quantRemover;
+            if(quantidade > 0){
+
+              var query = {'itens._id': pers.itens[index]._id}
+              var update = {'$set':  {'itens.$.quantidade': quantidade}};
+              var options = {upsert : true};
+
+              Personagem.update(query, update, options, function(err){
+                if (err) {controller.erro(err, params, 'Erro ao remover item '+params.item+' do personagem '+params.nome);}
+                else{
+                  var retorno = quantRemover+' itens '+params.item+' removido do personagem '+params.nome;
+                  params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+                }
+              });
+            }
+            else if(quantidade <= 0){
+              pers.itens.remove(pers.itens[index]);
+              pers.save(function (err) {
+                if (err) {controller.erro(err, params, 'Erro ao remover item '+params.item+' do personagem '+params.nome);}
+                else{
+                  var retorno = 'Item '+params.item+' removido do personagem '+params.nome;
+                  params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
+                }
+              });
+            }
+          }
+        }
+      }
+    }
+    controller.buscarPersonagem(params, callback);
   };
 
   controller.addItem = function(params){
