@@ -99,7 +99,7 @@ var item = function(params){
   //[Item ou item] [nome personagem] [+ ou -] [(][nome do item],[descricao - opcional],[quantidade - opcional][)]
   //Exemplo: 'item Gandalf + (Glamdring, brilha perto de orcs, 1)', 'item Legolas - (flecha caça, 1)'
   //o símbolo pode ser (+, - ou ?) (adicionar item, diminuir item, consultar todos)
-  if(/^(I|i)tem\s*\w+(\s\w+)*\s*(\+|-)\s*\(\s*\w+(\s\w+)*\s*([,]\s*\w+(\s\w+)*\s*)?([,]\s*\d+\s*)?\)\s*$/.test(params.msg)){
+  if(/^(I|i)te(m|ns)\s*\w+(\s\w+)*\s*(\+|-)\s*\(\s*\w+(\s\w+)*\s*([,]\s*\w+(\s\w+)*\s*)?([,]\s*\d+\s*)?\)\s*$/.test(params.msg)){
     var dados = quebrarValoresItem(params.msg);
     params.nome = dados.nome;
     params.simbolo = dados.simbolo;
@@ -112,7 +112,7 @@ var item = function(params){
   //verifica se texto se encaixa na estrutura:
   //{[Item ou item] [nome personagem] [?]}
   //Ex: 'Item Golum ?'
-  }else if(/^(I|i)tem\s*\w+(\s\w+)*\s*\?\s*$/.test(params.msg)){
+  }else if(/^(I|i)te(m|ns)\s*\w+(\s\w+)*\s*\?\s*$/.test(params.msg)){
     var dados = quebrarValoresItem(params.msg);
     params.nome = dados.nome;
 
@@ -172,7 +172,7 @@ var quebrarValoresItem = function(msg){
   var dados = {};
 
   //substitui item por ''
-  var msg = msg.replace(/^(I|i)tem/g,'');
+  var msg = msg.replace(/^(I|i)te(m|ns)/g,'');
   dados.simbolo = msg.match(/(\+|-|\?)/) ? msg.match(/(\+|-|\?)/)[0] : null;
   dados.nome = msg.substring(0, msg.indexOf(dados.simbolo)).trim();
   //Recupera valor entre '(' e ','. Ex ([nome do item],
@@ -208,6 +208,7 @@ var comandos = [
   {nome : 'pv', comando : pontosDeVida},
   {nome : 'xp', comando : experiencia},
   {nome : 'item', comando : item},
+  {nome : 'itens', comando : item},
   {nome : 'weapons', comando : null},
   {nome : 'armor', comando : null},
   {nome : 'stats', comando : null},
