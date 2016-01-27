@@ -1,5 +1,5 @@
 var SlackBot = require('slackbots');
-var comandos = require('./controllers/comandos');
+var comandos = require('./commands/comandos');
 
 // create a bot
 var bot = new SlackBot({
