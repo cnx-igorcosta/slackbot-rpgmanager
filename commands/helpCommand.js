@@ -19,6 +19,10 @@ var helpCommand = function(params){
     '   [Item, item, Itens ou itens] [nome do personagem] [+ ou -][(][nome do item][,descricao do item - opcional][,quantidade a adicionar/remover - opcional][)].\n'+
     '   Ex: "Item Gandalf + (Espada, Grlamdring magica, 1)" ou Itens Legolas - (flecha caca,10)\n'+
     '   Para consultar os itens do personagem utilize o comando "?". Ex: "Item Bilbo ?" ou "Itens Merrin ?"\n\n'+
+    '- gold - Adiciona, remove ou consulta dinheiro do personagem: '+
+    '   [Gold ou gold] [nome do personagem] [+ ou -] [quantidade].\n'+
+    '   Ex: "Gold Legolas + 10" ou gold Legolas - 50\n'+
+    '   Para consultar o dinheiro do personagem utilize o comando "?". Ex: "Gold Bilbo ?""\n\n'+
     '- roll - Rolagem de dados seguindo a estrutura: '+
     '   [Roll ou roll] [quantidade de dados][D ou d][quantidade de faces do dado] ([+ ou -][modificador], opcional).\n'+
     '   Ex: "roll 3d6", "roll 1d20+1", "roll 2d8-3".';
