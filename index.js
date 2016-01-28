@@ -1,7 +1,7 @@
 var SlackBot = require('slackbots');
 var comandos = require('./commands/comandos');
 
-var token = SLACKBOT_TOKEN;
+var token = $SLACKBOT_TOKEN;
 
 // create a bot
 var bot = new SlackBot({
