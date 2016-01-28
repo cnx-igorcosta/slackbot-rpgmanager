@@ -7,6 +7,19 @@ var itemSchema = new Schema({
   quantidade:Number
 });
 
+var armaSchema = new Schema({
+  nome:String,
+  descricao:String,
+  dano:String,
+  ba:Number,
+});
+
+var armaduraSchema = new Schema({
+  nome:String,
+  descricao: String,
+  ca:Number
+});
+
 var personagemSchema = new Schema({
   nome : {type : String, index: {unique: true}},
   for : Number,
@@ -24,8 +37,8 @@ var personagemSchema = new Schema({
   //talentos: [String],
   dinheiro: Number,
   itens: [itemSchema],
-  //armas: [{nome:String, descricao:String, quantidade: Number, dano:String, ba:Number, equipada: Boolean}],
-  //armaduras: [{nome:String, descricao: String, quantidade: Number, ca:Number, equipada: Boolean}],
+  armas: [armaSchema],
+  armaduras: [armaduraSchema],
   //magias[String]
 });
 

@@ -5,7 +5,8 @@ var token = process.env.SLACKBOT_TOKEN;
 
 // create a bot
 var bot = new SlackBot({
-    token: token, // Add a bot https://my.slack.com/services/new/bot and put the token
+    //token: token, // Add a bot https://my.slack.com/services/new/bot and put the token
+    token: 'xoxb-19252493953-5VWh8JlXLkFYuiQxqygTzlbu',
     name: 'rpgmanager'
 });
 
