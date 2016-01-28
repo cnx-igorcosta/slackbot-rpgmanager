@@ -1,9 +1,11 @@
 var SlackBot = require('slackbots');
 var comandos = require('./commands/comandos');
 
+var token = SLACKBOT_TOKEN;
+
 // create a bot
 var bot = new SlackBot({
-    token: 'xoxb-19252493953-5VWh8JlXLkFYuiQxqygTzlbu', // Add a bot https://my.slack.com/services/new/bot and put the token
+    token: token, // Add a bot https://my.slack.com/services/new/bot and put the token
     name: 'rpgmanager'
 });
 
