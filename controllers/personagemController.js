@@ -15,7 +15,8 @@ module.exports = function () {
   //Busca o personagem pelo nome e executa callback
   controller.buscarPersonagem = function(params, callback){
 
-    var query = {nome: { $regex : new RegExp(params.nome, "i") }};
+    var nome = params.nome.trim();
+    var query = {nome: { $regex : new RegExp(nome, "i") }};
 
     Personagem.findOne(query, function(err, pers){
       if (err) {controller.erro(err, params, 'Erro ao buscar personagem '+params.nome);}
@@ -26,7 +27,7 @@ module.exports = function () {
       }
     });
   };
-
+  
 
   return controller;
 }();

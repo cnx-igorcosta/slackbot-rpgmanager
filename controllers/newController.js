@@ -7,7 +7,7 @@ var newController = {};
 newController.salvar = function(params){
 
   var pers = new Personagem({
-    nome: params.pers.nome,
+    nome: params.pers.nome.trim(),
     classe: params.pers.classe,
     raca: params.pers.raca,
     for: parseInt(params.pers.for),
