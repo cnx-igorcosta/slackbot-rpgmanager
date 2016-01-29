@@ -11,7 +11,7 @@ var armaSchema = new Schema({
   nome:String,
   descricao:String,
   dano:String,
-  ba:Number,
+  ba:Number
 });
 
 var armaduraSchema = new Schema({
