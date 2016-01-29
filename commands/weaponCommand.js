@@ -53,6 +53,8 @@ var quebrarValoresWeapon = function(msg){
     arma.ba = ba[0].replace(/,/g,'').replace(/\)/g,'').replace(/\s/g,'');
   }
   dados.arma = arma;
+
+  return dados;
 };
 
 module.exports = weaponCommand;
