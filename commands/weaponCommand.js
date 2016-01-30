@@ -13,11 +13,11 @@ var weaponCommand = function(params){
     weaponController.removeWeapon(params);
 
   //verifica se texto se encaixa na estrutura:
-  //[Weapon ou weapon] [nome do personagem] [+] [(][nome da arma][,][descricao - opcional][,][dano da arma][,][bonus de ataque]
+  //[Weapon ou weapon] [nome do personagem] [+] [(][nome da arma][,][descricao - opcional][,][dano da arma][,][bonus de ataque][)]
   //Ex: 'Weapon Gandalf - Glamdring'. remove a arma do personagem.
 }else if(/^(W|w)eapon\s*(\s\w*)*\+\s*\(\s*(\s*\w*)*(,(\s\w*)*)?,\s*\d+(D|d)\d+(\s*(\+|-)\s*\d+)?\s*,\s*\d+\s*\)\s*$/.test(params.msg)){
     try{
-      var msg = params.msg.replace(/^(W|w)eapon/g,"").trim();
+      var msg = params.msg.replace(/^(W|w)eapon/g,'').trim();
 
       var dados = quebrarValoresWeapon(msg);
       params.nome = dados.nome;
@@ -28,7 +28,9 @@ var weaponCommand = function(params){
       console.log(err);
       params.bot.postMessageToChannel(params.channel.name, 'Erro de sintaxe ao adicionar arma ao personagem', {as_user: true});
     }
-
+    //verifica se texto se encaixa na estrutura:
+    //[Weapon ou weapon] [nome do personagem] [?]
+    //Ex: 'Weapon Aragorn ?'. consulta as armas do personagem.
   }else if(/^(W|w)eapon\s+(\s*\w*)*\?\s*$/.test(params.msg)){
     var msg = params.msg.replace(/^(W|w)eapon/g,"").trim();
     var dados = quebrarValoresWeapon(msg);

@@ -22,7 +22,7 @@ statsController.listStats = function(params){
     var descricaoCa = ' ('+modificadores(pers.des)+' Des';
     for(var index = 0; index < pers.armaduras.length; index++){
       ca +=  pers.armaduras[index].ca;
-      descricaoCa += ','+pers.armaduras[index].ca+' '+pers.armaduras[index].nome;
+      descricaoCa += ', '+pers.armaduras[index].ca+' '+pers.armaduras[index].nome;
     }
     descricaoCa += ')';
     retorno += '\nCA:' + ca + descricaoCa;

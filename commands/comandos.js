@@ -11,6 +11,7 @@ var itemCommand = require('./itemCommand');
 var goldCommand = require('./goldCommand');
 var weaponCommand = require('./weaponCommand');
 var statsCommand = require('./statsCommand');
+var armorCommand = require('./armorCommand');
 
 
 var comandos = [
@@ -24,7 +25,7 @@ var comandos = [
   {nome : 'item', comando : itemCommand},
   {nome : 'itens', comando : itemCommand},
   {nome : 'weapon', comando : weaponCommand},
-  {nome : 'armor', comando : null},
+  {nome : 'armor', comando : armorCommand},
   {nome : 'stats', comando : statsCommand},
   {nome : 'gold', comando : goldCommand},
   {nome : 'level', comando : null},
