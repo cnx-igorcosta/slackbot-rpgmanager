@@ -1,4 +1,4 @@
-var personagemController = require('./personagemController');
+//var personagemController = require('./personagemController');
 var Personagem = require('../models/personagem');
 
 var listController = {};
