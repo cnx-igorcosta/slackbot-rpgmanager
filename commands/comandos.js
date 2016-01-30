@@ -1,4 +1,5 @@
-var connection = require('../config/database.js')('mongodb://localhost/rpgmanager');
+var uri = process.env.MONGOLAB_URI;
+var connection = require('../config/database.js')(uri);
 //var personagemController = require('../controllers/personagemController');
 
 var helpCommand = require('./helpCommand');
