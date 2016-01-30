@@ -15,7 +15,7 @@ var weaponCommand = function(params){
   //verifica se texto se encaixa na estrutura:
   //[Weapon ou weapon] [nome do personagem] [+] [(][nome da arma][,][descricao - opcional][,][dano da arma][,][bonus de ataque][)]
   //Ex: 'Weapon Gandalf - Glamdring'. remove a arma do personagem.
-}else if(/^(W|w)eapon\s*(\s\w*)*\+\s*\(\s*(\s*\w*)*(,(\s\w*)*)?,\s*\d+(D|d)\d+(\s*(\+|-)\s*\d+)?\s*,\s*\d+\s*\)\s*$/.test(params.msg)){
+}else if(/^(W|w)eapon\s*(\s\w*)*\+\s*\(\s*(\s*\w*)*(,(\s*\w*)*)?,\s*\d+(D|d)\d+(\s*(\+|-)\s*\d+)?\s*,\s*\d+\s*\)\s*$/.test(params.msg)){
     try{
       var msg = params.msg.replace(/^(W|w)eapon/g,'').trim();
 
@@ -45,7 +45,8 @@ var quebrarValoresWeapon = function(msg){
   var dados = {};
   var arma = {};
 
-  dados.nome = msg.substring(0 , msg.indexOf('+')).trim();
+  var simbolo = msg.match(/(\+|-|\?)/)[0];
+  dados.nome = msg.substring(0 , msg.indexOf(simbolo)).trim();
   var nomeArma = msg.match(/\(\s*(\s*\w*)*,/);
   if(nomeArma){
     arma.nome =  nomeArma[0].replace(/\(/g,'').replace(/,/g,'').trim();

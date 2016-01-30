@@ -13,14 +13,15 @@ var weaponCommand = require('./weaponCommand');
 var statsCommand = require('./statsCommand');
 var armorCommand = require('./armorCommand');
 var levelCommand = require('./levelCommand');
+var deleteCommand = require('./deleteCommand');
 
 
 var comandos = [
   {nome: 'rpghelp', comando : helpCommand},
   {nome : 'new', comando : newCommand},
   {nome : 'list', comando : listCommand},
-  {nome : 'update', comando : null},
-  {nome : 'delete', comando : null},
+//  {nome : 'update', comando : null},
+  {nome : 'delete', comando : deleteCommand},
   {nome : 'pv', comando : pvCommand},
   {nome : 'xp', comando : xpCommand},
   {nome : 'item', comando : itemCommand},

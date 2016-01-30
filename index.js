@@ -5,8 +5,7 @@ var token = process.env.SLACKBOT_TOKEN;
 
 // create a bot
 var bot = new SlackBot({
-    //token: token, // Add a bot https://my.slack.com/services/new/bot and put the token
-    token: 'xoxb-19252493953-5VWh8JlXLkFYuiQxqygTzlbu',
+    token: token, // Add a bot https://my.slack.com/services/new/bot and put the token
     name: 'rpgmanager'
 });
 
@@ -59,7 +58,7 @@ var doComand = function(message) {
   var channel = getChannelById(message.channel);
   for(var index = 0; index < comandos.length; index++){
     if((message.text.toLowerCase().indexOf(comandos[index].nome)) > -1){
-      var param = {bot:bot, channel:channel, msg:message.text}
+      var param = {bot:bot, channel:channel, msg:message.text};
       comandos[index].comando(param);
     }
   }

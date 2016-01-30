@@ -9,7 +9,7 @@ var newCommand = function(params){
     .replace(/:/g,"\":\"").replace(/,/g,"\",\"");
   //TODO: try/catch
   params.pers = JSON.parse(personagemTxt);
-  console.log('pv: '+params.pers.pv);
+
   newController.salvar(params);
 }
 

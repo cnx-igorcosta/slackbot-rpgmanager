@@ -14,18 +14,20 @@ statsController.listStats = function(params){
     '), Sab:'+pers.sab+'('+modificadores(pers.sab)+'), Car:'+pers.car+'('+modificadores(pers.car)+')\n'+
     'pv:'+pers.pv+'/'+pers.pvTotal;
 
-    /*for(var index = 0; index < pers.armas.length; index++){
-      retorno += '\nba:'
-
-    }*/
     var ca = 10 + modificadores(pers.des);
-    var descricaoCa = ' ('+modificadores(pers.des)+' Des';
+    var descricaoCa = modificadores(pers.des) > 0 ? modificadores(pers.des)+' Des' : '';
     for(var index = 0; index < pers.armaduras.length; index++){
       ca +=  pers.armaduras[index].ca;
       descricaoCa += ', '+pers.armaduras[index].ca+' '+pers.armaduras[index].nome;
     }
-    descricaoCa += ')';
-    retorno += '\nCA:' + ca + descricaoCa;
+
+    descricaoCa = descricaoCa ? '('+ descricaoCa +')' : undefined;
+    retorno += '\nCA:' + ca;
+    retorno = descricaoCa ? retorno+descricaoCa : descricaoCa;
+
+    for(var index = 0; index < pers.armas.length; index++){
+      retorno += '\nAtaque: '+pers.armas[index].nome+', dano: '+pers.armas[index].dano+', BA:'+pers.armas[index].ba;
+    }
 
     params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
   };

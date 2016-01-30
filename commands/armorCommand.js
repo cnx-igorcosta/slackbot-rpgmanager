@@ -30,7 +30,8 @@ var quebrarValoresArmor = function(msg){
   var dados = {};
   var armadura = {};
 
-  dados.nome = msg.substring(0 , msg.indexOf('+')).trim();
+  var simbolo = msg.match(/(\+|-|\?)/)[0];
+  dados.nome = msg.substring(0 , msg.indexOf(simbolo)).trim();
   var nomeArmadura = msg.match(/\(\s*(\s*\w*)*,/);
   if(nomeArmadura){
     armadura.nome =  nomeArmadura[0].replace(/\(/g,'').replace(/,/g,'').trim();
