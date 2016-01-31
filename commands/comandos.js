@@ -1,6 +1,7 @@
+// var connection = require('../config/database.js')('mongodb://localhost/rpgmanager');
 var uri = process.env.MONGOLAB_URI;
 var connection = require('../config/database.js')(uri);
-//var personagemController = require('../controllers/personagemController');
+var personagemController = require('../controllers/personagemController');
 
 var helpCommand = require('./helpCommand');
 var newCommand = require('./newCommand');
@@ -15,13 +16,14 @@ var statsCommand = require('./statsCommand');
 var armorCommand = require('./armorCommand');
 var levelCommand = require('./levelCommand');
 var deleteCommand = require('./deleteCommand');
+var setCommand = require('./setCommand');
 
 
 var comandos = [
   {nome: 'rpghelp', comando : helpCommand},
   {nome : 'new', comando : newCommand},
   {nome : 'list', comando : listCommand},
-//  {nome : 'update', comando : null},
+  {nome : 'set', comando : setCommand},
   {nome : 'delete', comando : deleteCommand},
   {nome : 'pv', comando : pvCommand},
   {nome : 'xp', comando : xpCommand},
@@ -32,6 +34,7 @@ var comandos = [
   {nome : 'stats', comando : statsCommand},
   {nome : 'gold', comando : goldCommand},
   {nome : 'level', comando : levelCommand},
+  // {nome : 'ba', comando : baCommand},
   {nome : 'roll', comando : rollCommand}
 ];
 

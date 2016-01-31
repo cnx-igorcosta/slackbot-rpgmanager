@@ -28,7 +28,7 @@ var personagemSchema = new Schema({
   int : Number,
   sab : Number,
   car : Number,
-  pv : Number,
+  pv : Number,☺
   pvTotal: Number,
   xp: Number,
   nivel: Number,
@@ -42,12 +42,12 @@ var personagemSchema = new Schema({
   //magias[String]
 });
 
-personagemSchema.methods.stats = function(){
-  var retorno = 'Nome: ' + this.nome + ', Raça: ' + this.raca + ', Classe:' +
-    this.classe +', FOR ' + this.for + ' DES ' + this.des+ ' CON ' + this.con +
-    ' INT '+ this.int + ' SAB '+ this.sab +' CAR ' + this.car;
-  return retorno;
-};
+// personagemSchema.methods.stats = function(){
+//   var retorno = 'Nome: ' + this.nome + ', Raça: ' + this.raca + ', Classe:' +
+//     this.classe +', FOR ' + this.for + ' DES ' + this.des+ ' CON ' + this.con +
+//     ' INT '+ this.int + ' SAB '+ this.sab +' CAR ' + this.car;
+//   return retorno;
+// };
 
 var Personagem = mongoose.model('Personagem', personagemSchema);
 
