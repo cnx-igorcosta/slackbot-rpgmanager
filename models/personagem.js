@@ -28,7 +28,7 @@ var personagemSchema = new Schema({
   int : Number,
   sab : Number,
   car : Number,
-  pv : Number,☺
+  pv : Number,
   pvTotal: Number,
   xp: Number,
   nivel: Number,
