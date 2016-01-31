@@ -106,7 +106,7 @@ itemController.listItens = function(params){
   var callback = function(params, query, pers){
     var retorno = pers.itens.length ? 'Itens do '+pers.nome+':' : 'Personagem '+pers.nome+ ' não possui itens';
     for(var index = 0; index < pers.itens.length; index++){
-      retorno += '\n  - nome: '+ pers.itens[index].nome;
+      retorno += '\n  - '+ pers.itens[index].nome;
       if(pers.itens[index].descricao){
         retorno +=' ("' + pers.itens[index].descricao + '")';
       }
