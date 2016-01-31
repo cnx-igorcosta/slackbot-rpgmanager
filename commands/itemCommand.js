@@ -50,7 +50,8 @@ var quebrarValoresItem = function(msg){
   //caso tenha a quantidade após a descricao
   if(/[,]\s*\w+(\s\w+)*\s*[,]/.test(msg)){
     dados.descricao = msg.substring((msg.indexOf(',') + 1), msg.lastIndexOf(','));
-  }else if(/([,]\s*\d+\s*)\)/.test(msg)){
+  }if(/[,]\s*\d+\s*\)/.test(msg)){
+    // dados.quantidade = msg.match(/[,]\s*\d+\s*\)/)[0].replace(/,/g,'').replace(/\)/g,'').trim();
     dados.quantidade = msg.substring((msg.lastIndexOf(',') + 1), msg.lastIndexOf(')'));
   //Recupera valor entre ',' e ')'. Ex ,[descricao item])
   //caso nao tenha a quantidade após a descricao
