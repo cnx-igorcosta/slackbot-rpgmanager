@@ -1,5 +1,6 @@
 var personagemController = require('./personagemController');
 var Personagem = require('../models/personagem');
+var rulesController = require('./rulesController');
 
 var levelController = {};
 
@@ -24,7 +25,11 @@ levelController.addLevel = function(params){
     Personagem.update(query, update, options, function(err){
       if (err) {console.log(err);personagemController.erro(params, 'Erro ao adicionar nível ao personagem');}
       else{
-        var retorno = 'Personagem: ' + pers.nome +': '+ nivel + ' Nível';
+        var retorno = 'Personagem: ' + pers.nome;
+        var statsLevel = rulesController.upLevel(pers.classe, nivel);
+        if(statsLevel)
+          retorno += '. '+statsLevel;
+
         params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
       }
     });

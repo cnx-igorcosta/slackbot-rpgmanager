@@ -1,5 +1,5 @@
 var personagemController = require('./personagemController');
-var modificadores = require('../models/modificadoresAtributo');
+var modificadores = require('../rules/modificadoresAtributo');
 
 var statsController = {};
 
