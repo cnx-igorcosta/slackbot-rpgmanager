@@ -1,3 +1,5 @@
+var modificadores = require('./modificadoresAtributo');
+
 var barbaro = {}
 
 barbaro.rules = [
@@ -23,27 +25,31 @@ barbaro.rules = [
   {nivel: 20, ba:[20,15,10,5], fortitude:12, reflexos:6, vontade:6, talento:'Fúria poderosa, fúria 6/dia'},
 ];
 
-barbaro.upLevel = function(level){
-  var retorno = 'Nível: '+ level;
+var getRuleByLevel = function(level){
   for(var index = 0; index < barbaro.rules.length; index++){
     if(level === barbaro.rules[index].nivel){
-
-      retorno += ', ba: ';
-      var bas = barbaro.rules[index].ba;
-      for(var j = 0; j < bas.length; j++){
-        if(j !== 0) retorno += '/';
-        retorno += '+' + bas[j]
-      }
-
-      retorno += '. Fortitude: +' + barbaro.rules[index].fortitude +
-        ', Reflexos: +' + barbaro.rules[index].reflexos +
-        ', Vontade: +' + barbaro.rules[index].vontade;
-
-      retorno += '. Talento: ' + barbaro.rules[index].talento;
+      return barbaro.rules[index];
     }
   }
-  return retorno;
 }
 
+barbaro.upLevel = function(level){
+
+  var rule = getRuleByLevel(level);
+  var retorno = 'Nível: '+ level;
+
+  retorno += ', ba: ';
+  var bas = rule.ba;
+  for(var j = 0; j < bas.length; j++){
+    if(j !== 0) retorno += '/';
+    retorno += '+' + bas[j]
+  }
+
+  retorno += '. Fortitude: +' + rule.fortitude +
+    ', Reflexos: +' + rule.reflexos + ', Vontade: +' + rule.vontade;
+
+  retorno += '. Talento: ' + rule.talento;
+  return retorno;
+}
 
 module.exports = barbaro;

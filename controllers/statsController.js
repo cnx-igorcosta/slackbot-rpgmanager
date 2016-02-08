@@ -1,5 +1,6 @@
 var personagemController = require('./personagemController');
 var modificadores = require('../rules/modificadoresAtributo');
+var rulesController = require('./rulesController');
 
 var statsController = {};
 
@@ -18,7 +19,8 @@ statsController.listStats = function(params){
     var descricaoCa = modificadores(pers.des) > 0 ? modificadores(pers.des)+' Des' : '';
     for(var index = 0; index < pers.armaduras.length; index++){
       ca +=  pers.armaduras[index].ca;
-      descricaoCa += ', '+pers.armaduras[index].ca+' '+pers.armaduras[index].nome;
+      if(descricaoCa || index > 0){ descricaoCa += ', '; }
+      descricaoCa += pers.armaduras[index].ca+' '+pers.armaduras[index].nome;
     }
 
     descricaoCa = descricaoCa ? '('+ descricaoCa +')' : undefined;
@@ -27,6 +29,11 @@ statsController.listStats = function(params){
 
     for(var index = 0; index < pers.armas.length; index++){
       retorno += '\nAtaque: '+pers.armas[index].nome+', dano: '+pers.armas[index].dano+', BA:'+pers.armas[index].ba;
+    }
+
+    var rulesStats = rulesController.statsByClass(pers);
+    if(rulesStats){
+      retorno += rulesStats
     }
 
     params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
