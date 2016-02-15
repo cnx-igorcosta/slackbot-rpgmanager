@@ -31,6 +31,11 @@ var getRuleByLevel = function(classe, level){
   }
 }
 
+rulesController.getRule = function(nomeClasse, level){
+  var classe = getClassRules(nomeClasse, level);
+  return getRuleByLevel(classe, level);
+}
+
 rulesController.upLevel = function(classe, level){
   var rule = getClassRules(classe, level);
     return rule.upLevel(level);
@@ -57,12 +62,12 @@ rulesController.statsByClass = function(pers){
       retorno += '(' + rule.vontade + ' classe, ' + modificadores(pers.sab) + ' Sab)';
     }
 
-  retorno += '\nBA: ';
-  var bas = rule.ba;
-  for(var j = 0; j < bas.length; j++){
-    if(j !== 0) retorno += '/';
-    retorno += '+' + bas[j]
-  }
+  // retorno += '\nBA: ';
+  // var bas = rule.ba;
+  // for(var j = 0; j < bas.length; j++){
+  //   if(j !== 0) retorno += '/';
+  //   retorno += '+' + bas[j]
+  // }
   return retorno;
 }
 

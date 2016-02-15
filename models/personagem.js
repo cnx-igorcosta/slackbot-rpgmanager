@@ -9,9 +9,9 @@ var itemSchema = new Schema({
 
 var armaSchema = new Schema({
   nome:String,
-  descricao:String,
   dano:String,
-  ba:Number
+  ba:Number,
+  tipo:String
 });
 
 var armaduraSchema = new Schema({

@@ -13,8 +13,7 @@ weaponController.addWeapon = function(params){
     }else{
       var achou = false;
       for(var index = 0; index < pers.armas.length; index++){
-         if(pers.armas[index].nome.toLowerCase() === params.arma.nome.toLowerCase() &&
-              pers.armas[index].descricao === params.arma.descricao){
+         if(pers.armas[index].nome.toLowerCase() === params.arma.nome.toLowerCase()){
             achou = true;
 
             var retorno = 'Arma '+params.arma.nome+' já adicionada ao personagem '+pers.nome;
@@ -49,11 +48,7 @@ weaponController.listWeapon = function(params){
   var callback = function(params, query, pers){
     var retorno = pers.armas.length ? 'Armas do '+pers.nome+':' : 'Personagem '+pers.nome+ ' não possui armas';
     for(var index = 0; index < pers.armas.length; index++){
-      retorno += '\n  - nome: '+ pers.armas[index].nome;
-      if(pers.armas[index].descricao){
-        retorno +=' ("' + pers.armas[index].descricao + '")';
-      }
-      retorno += ', dano: ' + pers.armas[index].dano + ', ba: '+ pers.armas[index].ba;
+      retorno += '\n  - '+ pers.armas[index].nome + ', dano: ' + pers.armas[index].dano + ', ba: '+ pers.armas[index].ba;
     }
     params.bot.postMessageToChannel(params.channel.name, retorno, {as_user: true});
   };
