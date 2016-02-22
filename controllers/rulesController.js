@@ -45,30 +45,52 @@ rulesController.statsByClass = function(pers){
   var classe = getClassRules(pers.classe, pers.nivel);
   var rule = getRuleByLevel(classe, pers.nivel);
 
-    var retorno = '\n';
-    var con = modificadores(pers.con);
-    var des = modificadores(pers.des);
-    var sab = modificadores(pers.sab);
-    retorno += 'Fortitude: ' + (rule.fortitude + con);
-    if(con) {
-      retorno += '(' + rule.fortitude + ' classe, ' + modificadores(pers.con) + ' Con) ';
-    }
-    retorno += ', Reflexos: ' + (rule.reflexos + modificadores(pers.des));
-    if(des) {
-      retorno += '(' + rule.reflexos + ' classe, ' + modificadores(pers.des) + ' Des) '
-    }
-    retorno += ', Vontade: ' + (rule.vontade + modificadores(pers.sab));
-    if(sab) {
-      retorno += '(' + rule.vontade + ' classe, ' + modificadores(pers.sab) + ' Sab)';
-    }
-
-  // retorno += '\nBA: ';
-  // var bas = rule.ba;
-  // for(var j = 0; j < bas.length; j++){
-  //   if(j !== 0) retorno += '/';
-  //   retorno += '+' + bas[j]
-  // }
+  var retorno = '\n';
+  var con = modificadores(pers.con);
+  var des = modificadores(pers.des);
+  var sab = modificadores(pers.sab);
+  retorno += 'Fortitude: ' + (rule.fortitude + con);
+  if(con) {
+    retorno += '(' + rule.fortitude + ' classe, ' + con + ' Con) ';
+  }
+  retorno += ', Reflexos: ' + (rule.reflexos + des);
+  if(des) {
+    retorno += '(' + rule.reflexos + ' classe, ' +des + ' Des) '
+  }
+  retorno += ', Vontade: ' + (rule.vontade + sab);
+  if(sab) {
+    retorno += '(' + rule.vontade + ' classe, ' + sab + ' Sab)';
+  }
   return retorno;
 }
+
+rulesController.getFortitude = function(pers){
+  var rule = rulesController.getRule(pers.classe, pers.nivel);
+  var con = modificadores(pers.con);
+  var retorno = 'Personagem: ' + pers.nome + ', Fortitude: ' + (rule.fortitude + con) +
+    '(' + rule.fortitude + ' classe, ' + con + ' Con) ';
+
+  return retorno
+};
+
+rulesController.getReflexos = function(pers){
+  var rule = rulesController.getRule(pers.classe, pers.nivel);
+  var des = modificadores(pers.des);
+  var retorno = 'Personagem: ' + pers.nome + ', Reflexos: ' + (rule.reflexos + des) +
+    '(' + rule.fortitude + ' classe, ' + des + ' Des) ';
+
+  return retorno
+};
+
+rulesController.getVontade = function(pers){
+  var rule = rulesController.getRule(pers.classe, pers.nivel);
+  var sab = modificadores(pers.sab);
+  var retorno = 'Personagem: ' + pers.nome + ', Vontade: ' + (rule.vontade + sab) +
+    '(' + rule.fortitude + ' classe, ' + sab + ' Sab) ';
+
+  return retorno
+};
+
+
 
 module.exports = rulesController;
